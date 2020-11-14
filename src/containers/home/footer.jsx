@@ -1,6 +1,14 @@
 import React from 'react';
+import $ from 'jquery';
 
 class Footer extends React.Component {
+
+    componentDidMount() {
+        $(document).ready(function () {
+            window.$('[data-toggle="tooltip"]').tooltip();
+        });
+    }
+
     render() {
         return (
             <footer className="bg-light">

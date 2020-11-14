@@ -1,9 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { signup_email, login_email, errorOccur } from '../store/action';
+import LoaderComp from '../config/loader';
 import logo from '../assets/images/logo.png';
+import $ from 'jquery';
+
 
 class LoginModal extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             name: "",
             email: "",
@@ -11,12 +16,60 @@ class LoginModal extends React.Component {
             repeat_password: "",
             loginemail: "",
             loginpassword: "",
-            resetemail: ""
+            resetemail: "",
+            isLoading: false
         }
     }
 
+
+    static getDerivedStateFromProps(props, state) {
+
+        if (props.isAuthenticated === true) {
+
+            return {
+                loginemail: "",
+                loginpassword: "",
+                isLoading: false
+            };
+
+        } else if (props.isErrorOccured) {
+            
+            return {
+                isLoading: false
+            };
+
+        }
+
+        return {}
+
+    }
+
+
+    componentDidMount() {
+        function toggleResetPswd(e) {
+            // e.preventDefault();
+            $('#logreg-forms .form-signin').toggle() // display:block or none
+            $('#logreg-forms .form-reset').toggle() // display:block or none
+        }
+
+        function toggleSignUp(e) {
+            // e.preventDefault();
+            $('#logreg-forms .form-signin').toggle(); // display:block or none
+            $('#logreg-forms .form-signup').toggle(); // display:block or none
+        }
+
+        $(() => {
+            // Login Register Form
+            $('#logreg-forms #forgot_pswd').click(toggleResetPswd);
+            $('#logreg-forms #cancel_reset').click(toggleResetPswd);
+            $('#logreg-forms #btn-signup').click(toggleSignUp);
+            $('#logreg-forms #cancel_signup').click(toggleSignUp);
+        })
+    }
+
+
     handleInputChange = (e) => {
-        
+
         const value = e.target.value;
         const inputName = e.target.name;
         const inputID = e.target.id;
@@ -26,7 +79,7 @@ class LoginModal extends React.Component {
         });
 
         this.checkForm(inputID, value);
-        
+
     }
 
     checkForm = (e, v) => {
@@ -35,7 +88,7 @@ class LoginModal extends React.Component {
         let parent = TextName.parentNode;
         let helper;
 
-        if (parent.querySelectorAll('span[id="' + e + '-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="' + e + '-err"]').length === 0) {
             helper = document.createElement('span');
             helper.setAttribute("id", e + "-err")
             parent.insertBefore(helper, TextName);
@@ -44,10 +97,10 @@ class LoginModal extends React.Component {
         }
 
 
-        if (e == "inputEmail" || e == "resetEmail" || e == "user-email") {
-            var mailformat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (e === "inputEmail" || e === "resetEmail" || e === "user-email") {
+            var mailformat = /^(([^<>().,;:\s@"]+(\.[^<>().,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-            if (TextName.value == "") {
+            if (TextName.value === "") {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
@@ -65,9 +118,9 @@ class LoginModal extends React.Component {
             }
         }
 
-        if (e == "inputPassword") {
+        if (e === "inputPassword") {
 
-            if (TextName.value == "") {
+            if (TextName.value === "") {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
@@ -77,8 +130,8 @@ class LoginModal extends React.Component {
                 TextName.style.borderColor = "green";
             }
 
-        } else if (e == "user-pass") {
-            if (TextName.value == "") {
+        } else if (e === "user-pass") {
+            if (TextName.value === "") {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
@@ -95,14 +148,14 @@ class LoginModal extends React.Component {
                 TextName.style.borderColor = "green";
             }
 
-        } else if (e == "user-repeatpass") {
-            if (TextName.value == "") {
+        } else if (e === "user-repeatpass") {
+            if (TextName.value === "") {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
                 helper.innerHTML = "Enter Repeat Password";
 
-            } else if (this.state.password != TextName.value) {
+            } else if (this.state.password !== TextName.value) {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
@@ -113,8 +166,8 @@ class LoginModal extends React.Component {
                 TextName.style.borderColor = "green";
             }
 
-        } else if (e == "user-name") {
-            if (TextName.value == "") {
+        } else if (e === "user-name") {
+            if (TextName.value === "") {
 
                 TextName.style.borderColor = "red";
                 helper.style.color = "red";
@@ -133,10 +186,10 @@ class LoginModal extends React.Component {
         let inputEmail = document.getElementById("inputEmail");
         let inputPassword = document.getElementById("inputPassword");
 
-        let parent = e.target.parentNode;
+        let parent = e.target;
         let helper1, helper2;
 
-        if (parent.querySelectorAll('span[id="inputEmail-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="inputEmail-err"]').length === 0) {
             helper1 = document.createElement('span');
             helper1.setAttribute("id", "inputEmail-err")
             parent.insertBefore(helper1, inputEmail);
@@ -144,7 +197,7 @@ class LoginModal extends React.Component {
             helper1 = document.getElementById("inputEmail-err");
         }
 
-        if (parent.querySelectorAll('span[id="inputPassword-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="inputPassword-err"]').length === 0) {
             helper2 = document.createElement('span');
             helper2.setAttribute("id", "inputPassword-err")
             parent.insertBefore(helper2, inputPassword);
@@ -180,8 +233,24 @@ class LoginModal extends React.Component {
         let a = inputEmail.getAttribute("style").search("green");
         let b = inputPassword.getAttribute("style").search("green");
 
-        if((a != -1) && (b != -1)) {
-            npm
+
+        if ((a !== -1) && (b !== -1)) {
+
+            this.setState({
+                isLoading: true
+            });
+
+            if (Object.keys(this.props.loggedin_user).length === 0) {
+
+                let user = {
+                    email: this.state.loginemail,
+                    password: this.state.loginpassword
+                }
+
+                this.props.login_email(user);
+
+            }
+
         }
 
     }
@@ -195,10 +264,10 @@ class LoginModal extends React.Component {
         let userPass = document.getElementById("user-pass");
         let userRepeatPass = document.getElementById("user-repeatpass");
 
-        let parent = e.target.parentNode;
+        let parent = e.target;
         let span1, span2, span3, span4;
 
-        if (parent.querySelectorAll('span[id="user-name-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="user-name-err"]').length === 0) {
             span1 = document.createElement('span');
             span1.setAttribute("id", "user-name-err")
             parent.insertBefore(span1, userName);
@@ -206,7 +275,7 @@ class LoginModal extends React.Component {
             span1 = document.getElementById("user-name-err");
         }
 
-        if (parent.querySelectorAll('span[id="user-email-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="user-email-err"]').length === 0) {
             span2 = document.createElement('span');
             span2.setAttribute("id", "user-email-err")
             parent.insertBefore(span2, userEmail);
@@ -214,7 +283,7 @@ class LoginModal extends React.Component {
             span2 = document.getElementById("user-email-err");
         }
 
-        if (parent.querySelectorAll('span[id="user-pass-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="user-pass-err"]').length === 0) {
             span3 = document.createElement('span');
             span3.setAttribute("id", "user-pass-err")
             parent.insertBefore(span3, userPass);
@@ -222,7 +291,7 @@ class LoginModal extends React.Component {
             span3 = document.getElementById("user-pass-err");
         }
 
-        if (parent.querySelectorAll('span[id="user-repeatpass-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="user-repeatpass-err"]').length === 0) {
             span4 = document.createElement('span');
             span4.setAttribute("id", "user-repeatpass-err")
             parent.insertBefore(span4, userRepeatPass);
@@ -260,7 +329,7 @@ class LoginModal extends React.Component {
             }
 
             if (!this.state.email) {
-                
+
                 span2.style.color = "red";
                 userEmail.style.borderColor = "red";
                 span2.innerHTML = "Enter Email";
@@ -268,13 +337,13 @@ class LoginModal extends React.Component {
             }
 
             if (!this.state.password) {
-                
+
                 span3.style.color = "red";
                 userPass.style.borderColor = "red";
                 span3.innerHTML = "Enter Password";
 
             } else if (this.state.password.length < 6) {
-                
+
                 span3.style.color = "red";
                 userPass.style.borderColor = "red";
                 span3.innerHTML = "Password length must be 6 or more";
@@ -282,12 +351,12 @@ class LoginModal extends React.Component {
             }
 
             if (!this.state.repeat_password) {
-                
+
                 span4.style.color = "red";
                 userRepeatPass.style.borderColor = "red";
                 span4.innerHTML = "Enter Repeat Password";
 
-            } else if (this.state.password != this.state.repeat_password) {
+            } else if (this.state.password !== this.state.repeat_password) {
 
                 span4.style.color = "red";
                 userRepeatPass.style.borderColor = "red";
@@ -302,22 +371,33 @@ class LoginModal extends React.Component {
         let c = userPass.getAttribute("style").search("green");
         let d = userRepeatPass.getAttribute("style").search("green");
 
-        if((a != -1) && (b != -1) && (c != -1) && (d != -1)) {
-            alert("success")
-        }
+        if ((a !== -1) && (b !== -1) && (c !== -1) && (d !== -1)) {
 
+            if (Object.keys(this.props.loggedin_user).length === 0) {
+
+                let user = {
+                    name: this.state.name,
+                    email: this.state.email,
+                    password: this.state.password
+                }
+
+                this.props.signup_email(user);
+
+            }
+
+        }
     }
 
-    
+
     handleResetSubmit = (e) => {
         e.preventDefault();
 
         let resetEmail = document.getElementById("resetEmail");
 
-        let parent = e.target.parentNode;
+        let parent = e.target;
         let helper;
 
-        if (parent.querySelectorAll('span[id="resetEmail-err"]').length == 0) {
+        if (parent.querySelectorAll('span[id="resetEmail-err"]').length === 0) {
             helper = document.createElement('span');
             helper.setAttribute("id", "resetEmail-err")
             parent.insertBefore(helper, resetEmail);
@@ -336,21 +416,28 @@ class LoginModal extends React.Component {
 
         let a = resetEmail.getAttribute("style").search("green");
 
-        if(a != -1) {
+        if (a !== -1) {
             alert("success")
         }
 
     }
 
-
     render() {
+
+        let isLoader = this.state.isLoading === true ?
+            <LoaderComp />
+            :
+            null
+
         return (
             < div className="modal fade" id="loginModal" tabIndex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" >
+                {isLoader}
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content" id="logreg-forms">
                         <div className="modal-header">
+
                             {/* <h5 class="modal-title" id="loginModalLabel">Modal title</h5> */}
-                            <img style={{ width: '40px' }} src={logo} />
+                            <img style={{ width: '40px' }} src={logo} alt="logo" />
                             {/* <h2>{this.state.name}</h2> */}
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
@@ -359,40 +446,43 @@ class LoginModal extends React.Component {
                         <div className="modal-body">
                             {/* LOGIN BOX */}
                             <div>
-                                <div className="form-signin">
+                                <form onSubmit={this.handleLoginSubmit} className="form-signin">
                                     <h3 className="h3 mb-3 font-weight-normal" style={{ textAlign: 'center' }}> Sign in</h3>
                                     <div className="social-login">
                                         <button className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign in with Facebook</span> </button>
                                         <button className="btn google-btn social-btn" type="button"><span><i className="fab fa-google-plus-g" /> Sign in with Google+</span> </button>
                                     </div>
                                     <p style={{ textAlign: 'center' }}> OR </p>
-                                    <input type="email" name="loginemail" id="inputEmail" className="form-control" placeholder="Email address" required onChange={this.handleInputChange} value={this.state.loginemail} />
-                                    <input type="password" name="loginpassword" id="inputPassword" className="form-control" placeholder="Password" required onChange={this.handleInputChange} value={this.state.loginpassword} />
-                                    <button className="btn btn-success btn-block" type="submit" onClick={this.handleLoginSubmit}>Sign in</button>
-                                    <a href="#" id="forgot_pswd">Forgot password?</a>
+                                    <input type="email" name="loginemail" id="inputEmail" className="form-control" placeholder="Email address" onChange={this.handleInputChange} value={this.state.loginemail} />
+                                    <input type="password" name="loginpassword" id="inputPassword" className="form-control" placeholder="Password" onChange={this.handleInputChange} value={this.state.loginpassword} autoComplete="current_password" />
+                                    <div id="errSignin" className="text-danger"></div>
+                                    <button className="btn btn-success btn-block" type="submit">Sign in</button>
+                                    <a href="/#" id="forgot_pswd">Forgot password?</a>
                                     <hr />
                                     {/* <p>Don't have an account!</p>  */}
                                     <button className="btn btn-info btn-block" type="button" id="btn-signup">Sign up New Account</button>
-                                </div>
-                                <div className="form-reset">
-                                    <input type="email" name="resetemail" id="resetEmail" className="form-control" placeholder="Email address" required onChange={this.handleInputChange} value={this.state.resetemail} />
-                                    <button className="btn btn-primary btn-block" type="submit" onClick={this.handleResetSubmit}>Reset Password</button>
-                                    <a href="#" id="cancel_reset"><i className="fas fa-angle-left" /> Back</a>
-                                </div>
-                                <div className="form-signup">
+                                </form>
+                                <form onSubmit={this.handleResetSubmit} className="form-reset">
+                                    <input type="email" name="resetemail" id="resetEmail" className="form-control" placeholder="Email address" onChange={this.handleInputChange} value={this.state.resetemail} />
+                                    <div id="errReset" className="text-danger"></div>
+                                    <button className="btn btn-primary btn-block" type="submit">Reset Password</button>
+                                    <a href="/#" id="cancel_reset"><i className="fas fa-angle-left" /> Back</a>
+                                </form>
+                                <form onSubmit={this.handleSignupSubmit} className="form-signup">
                                     <h3 className="h3 mb-3 font-weight-normal" style={{ textAlign: 'center' }}> Sign Up</h3>
                                     <div className="social-login">
                                         <button className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign up with Facebook</span> </button>
                                         <button className="btn google-btn social-btn" type="button"><span><i className="fab fa-google-plus-g" /> Sign up with Google+</span> </button>
                                     </div>
                                     <p style={{ textAlign: 'center' }}>OR</p>
-                                    <input type="text" name="name" id="user-name" className="form-control" placeholder="Full name" required onChange={this.handleInputChange} value={this.state.name} />
-                                    <input type="email" name="email" id="user-email" className="form-control" placeholder="Email address" required onChange={this.handleInputChange} value={this.state.email} />
-                                    <input type="password" name="password" id="user-pass" className="form-control" placeholder="Password" required onChange={this.handleInputChange} value={this.state.password} />
-                                    <input type="password" name="repeat_password" id="user-repeatpass" className="form-control" placeholder="Repeat Password" required onChange={this.handleInputChange} value={this.state.repeat_password} />
-                                    <button className="btn btn-info btn-block" type="submit" onClick={this.handleSignupSubmit}>Sign Up</button>
-                                    <a href="#" id="cancel_signup"><i className="fas fa-angle-left" /> Back</a>
-                                </div>
+                                    <input type="text" name="name" id="user-name" className="form-control" placeholder="Full name" onChange={this.handleInputChange} value={this.state.name} />
+                                    <input type="email" name="email" id="user-email" className="form-control" placeholder="Email address" onChange={this.handleInputChange} value={this.state.email} />
+                                    <input type="password" name="password" id="user-pass" className="form-control" placeholder="Password" onChange={this.handleInputChange} value={this.state.password} autoComplete="new_password" />
+                                    <input type="password" name="repeat_password" id="user-repeatpass" className="form-control" placeholder="Repeat Password" onChange={this.handleInputChange} value={this.state.repeat_password} autoComplete="new_repeat_password" />
+                                    <div id="errSignup" className="text-danger"></div>
+                                    <button className="btn btn-info btn-block" type="submit">Sign Up</button>
+                                    <a href="/#" id="cancel_signup"><i className="fas fa-angle-left" /> Back</a>
+                                </form>
                                 <br />
                             </div>
                             {/* /LOGIN */}
@@ -404,4 +494,16 @@ class LoginModal extends React.Component {
     }
 }
 
-export default LoginModal;
+const mapStateToProps = (state) => ({
+    loggedin_user: state.loggedin_user,
+    isErrorOccured: state.isErrorOccured,
+    isAuthenticated: state.isAuthenticated
+})
+
+const mapDispatchToProp = (dispatch) => ({
+    signup_email: (data) => dispatch(signup_email(data)),
+    login_email: (data) => dispatch(login_email(data)),
+    errorOccur: (data) => dispatch(errorOccur(data))
+})
+
+export default connect(mapStateToProps, mapDispatchToProp)(LoginModal);

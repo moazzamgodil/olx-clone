@@ -1,6 +1,9 @@
 import * as firebase from 'firebase/app';
+// import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/auth';
+import 'firebase/analytics';
+import 'firebase/storage';
 
 var firebaseConfig = {
     apiKey: "AIzaSyARPrQ0z2HE2o2AmIcPvb-39tDQYhGLHe0",
@@ -13,5 +16,13 @@ var firebaseConfig = {
     measurementId: "G-B4V8NXXGYZ"
 };
 // Initialize Firebase
-export default firebase.initializeApp(firebaseConfig);
-// firebase.analytics();
+
+
+firebase.initializeApp(firebaseConfig);
+
+const analytics = firebase.analytics();
+const storage = firebase.storage();
+
+export {
+    analytics, storage, firebase as default
+} 

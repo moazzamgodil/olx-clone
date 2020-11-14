@@ -1,14 +1,72 @@
 import React from 'react';
+// import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
+import SelectCategoryBtn from './category/selectcategorybtn'
+import { connect } from 'react-redux';
+import { selectcategory } from '../store/action';
+import history from '../config/history';
+
 
 class ChooseCategory extends React.Component {
-    render() {
-        return (
+    constructor(props) {
+        super(props);
+        this.state = {
+            select_cat: ""
+        }
+    }
 
+    goBack = () => {
+        history.goBack();
+    }
+
+
+    componentDidUpdate() {
+
+        this.selector(this.state.select_cat)
+    }
+
+
+    selectCatFunction = (e) => {
+
+        const selector = e.currentTarget;
+
+        this.setState({
+            select_cat: selector.getAttribute("title")
+        });
+
+    }
+    
+    
+    selector = (e) => {
+        
+        if (e !== "") {
+            
+            for (var i = 0; i < document.getElementsByClassName("category-box").length; i++) {
+                
+                var a = document.getElementsByClassName("category-box")[i].getAttribute("id");
+                if (a === e) {
+                    document.getElementById(a).style.backgroundColor = "lavender";
+                }
+                else {
+                    document.getElementById(a).style.backgroundColor = "";
+                }
+            }
+            
+            this.props.selectcategory(this.state.select_cat);
+
+            history.push("/postAd/details");
+        }
+
+    }
+
+    render() {
+
+
+        return (
             <div>
                 <nav className="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-                    <i className="fas fa-arrow-left post-ad-back" />
-                    <a className="navbar-brand" href="#"><img className="logo2" src={logo} /></a>
+                    <span onClick={this.goBack}><i className="fas fa-arrow-left post-ad-back" /></span>
+                    <a className="navbar-brand" href="/#"><img className="logo2" src={logo} alt="logo" /></a>
                 </nav>
                 <div className="text-center mt-4">
                     <h3 className="font-weight-bold">POST YOUR AD</h3>
@@ -16,55 +74,14 @@ class ChooseCategory extends React.Component {
                 <div className="choose-category border rounded mb-4">
                     <h5 className="my-4 ml-4 font-weight-bold">CHOOSE A CATEGORY</h5>
                     <div className="col-6">
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-mobile-alt" />
-                            </div>
-                            <p>Mobiles</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-car" />
-                            </div>
-                            <p>Cars</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-motorcycle" />
-                            </div>
-                            <p>Motorcycles</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-home" />
-                            </div>
-                            <p>Houses</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-tablet-alt" />
-                            </div>
-                            <p>Tablet</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-laptop" />
-                            </div>
-                            <p>Computer &amp; Accessories</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
-                        <div className="category-box row font-weight-normal">
-                            <div className="col-2 text-center ml-0 pl-0">
-                                <i className="fas fa-tv" />
-                            </div>
-                            <p>TV - Video - Audio</p>
-                            <i className="ml-auto fas fa-angle-right" />
-                        </div>
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-mobile-alt" title="Mobiles" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-car" title="Cars" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-motorcycle" title="Motorcycles" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-home" title="Houses" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-tablet-alt" title="Tablet" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-laptop" title="Computer &amp; Accessories" />
+                        <SelectCategoryBtn onClick={this.selectCatFunction} icon="fas fa-tv" title="TV - Video - Audio" />
+
                     </div>
                 </div>
                 <footer className="bg-light">
@@ -82,4 +99,13 @@ class ChooseCategory extends React.Component {
     }
 }
 
-export default ChooseCategory;
+const mapStateToProps = (state) => ({
+    select_cat: state.select_cat,
+    isAuthenticated: state.isAuthenticated
+})
+
+const mapDispatchToProp = (dispatch) => ({
+    selectcategory: (data) => dispatch(selectcategory(data))
+})
+
+export default connect(mapStateToProps, mapDispatchToProp)(ChooseCategory);

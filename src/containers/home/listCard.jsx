@@ -1,21 +1,43 @@
 import React from 'react';
-import image from '../../assets/images/upload/phone.jpg';
+import { Link } from 'react-router-dom';
 
 class ListCard extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            adTitle: this.props.adData.adTitle,
+            adDescription: this.props.adData.adDescription,
+            selectType: this.props.adData.selectType,
+            selectCondition: this.props.adData.selectCondition,
+            adPrice: this.props.adData.adPrice,
+            adPriceConvert: this.props.adData.adPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            locationState: this.props.adData.locationState,
+            locationCity: this.props.adData.locationCity,
+            adMobileNo: this.props.adData.adMobileNo,
+            dateTime: this.props.adData.date,
+            uploadedImages: this.props.adData.uploadedImages,
+            keyLink: this.props.adData.keyLink,
+        }
+    }
+
     render() {
+
+        console.log(this.props.adData)
+
         return (
             <div className="col-lg-3 col-md-4 col-sm-6 mb-3">
-                <div className="listcardstyle card">
-                    <img className="card-img-top" src={image} />
-                    <div className="card-body">
-                        <h4 className="card-title m-0">Rs 50,000</h4>
-                        <p className="card-text text-muted small">Iphone 10</p>
-                        <div className="mt-5 d-flex justify-content-between listcardfoot">
-                            <p className="h6 text-muted font-weight-light">Karachi, Pakistan</p>
-                            <p className="h6 text-muted font-weight-light">oct 02</p>
+                    <Link to={this.state.keyLink} className="listcardstyle card">
+                        <img className="card-img-top" src={this.state.uploadedImages[0]} alt="thumbnail" />
+                        <div className="card-body">
+                            <h4 className="card-title m-0">{this.state.adPriceConvert}</h4>
+                            <p className="card-text text-muted small">{this.state.adTitle}</p>
+                            <div className="mt-5 d-flex justify-content-between listcardfoot">
+                                <p className="h6 text-muted font-weight-light">{this.state.locationCity}, {this.state.locationState}</p>
+                                <p className="h6 text-muted font-weight-light">{this.state.dateTime}</p>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </Link>
             </div>
         )
     }
