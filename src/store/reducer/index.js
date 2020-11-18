@@ -7,11 +7,13 @@ const INITIAL_STATE = {
     select_type: "",
     isPosted: false,
     getData: {},
+    getAdPageData: {},
+    getUserData: {},
     progress: 0,
 
 }
 
-export default (state = INITIAL_STATE, action) => {
+const routeDefault = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case "isAuthenticated":
             return ({
@@ -68,6 +70,16 @@ export default (state = INITIAL_STATE, action) => {
                 ...state,
                 getData: action.data,
             })
+        case "GetAdPage":
+            return ({
+                ...state,
+                getAdPageData: action.data,
+            })
+        case "GetUser":
+            return ({
+                ...state,
+                getUserData: action.data,
+            })
         case "Progress":
             return ({
                 ...state,
@@ -77,3 +89,5 @@ export default (state = INITIAL_STATE, action) => {
             return state;
     }
 }
+
+export default routeDefault;

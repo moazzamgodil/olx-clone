@@ -79,10 +79,12 @@ nav .buttonSell {
 .listcardstyle {
   cursor: pointer;
   transition: 0.5s all;
+  color: black !important;
 }
 
 .listcardstyle:hover {
-  background-color: whitesmoke;
+  background-color: #ebebeb;
+  text-decoration: none;
 }
 
 .listcardstyle .card-img-top {
@@ -112,7 +114,15 @@ nav .buttonSell {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 1px solid black;
+  border: 1px solid lightgray;
+}
+
+.avatar-bg {
+  vertical-align: middle;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid lightgray;
 }
 
 footer {
@@ -423,4 +433,50 @@ input[type=number] {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1000;
+}
+
+/* Carousel */
+
+@media (min-width: 576px) {
+  .carousel-item {
+    height: 480px;
+    max-height: 480px;
+    background-color: black !important;
+  }
+  .carousel-item img {
+    object-fit: contain !important;
+    /* width: 100% !important; */
+    height: 480px;
+    max-height: 480px;
+  }
+  .carousel-indicators.carousel-indicators--thumbnails {
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100%;
+    margin-left: 0px !important;
+    margin-bottom: 0px !important;
+    padding: 10px;
+    transition: 0.5s;
+  }
+  .carousel-indicators.carousel-indicators--thumbnails:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  .carousel-indicators.carousel-indicators--thumbnails li {
+    width: 80px;
+    height: 40px;
+    margin: 0;
+    border: 1px solid grey;
+    border-radius: 0;
+    margin: 0 5px 0 5px;
+  }
+  .carousel-indicators.carousel-indicators--thumbnails li img {
+    object-fit: cover;
+    width: 80px;
+    height: 40px;
+  }
+  .carousel-indicators.carousel-indicators--thumbnails .active {
+    background-color: transparent;
+  }
+  .carousel-indicators.carousel-indicators--thumbnails .active .thumbnail {
+    border-color: #337ab7;
+  }
 }

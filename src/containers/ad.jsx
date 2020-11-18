@@ -1,29 +1,38 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAdData } from '../store/action';
+import { getAdPage, getUser } from '../store/action';
+import LoaderComp from '../config/loader';
+import history from '../config/history';
+import AdPage from '../containers/ad/adpage';
 
 class Ad extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            getDataKey: null,
-            loggedin_user: null,
-            isAuthenticated: null,
-            adTitle: null,
-            adDescription: null,
-            selectType: null,
-            selectCondition: null,
-            adPrice: null,
-            // adPriceConvert: null,
-            locationState: null,
-            locationCity: null,
-            adMobileNo: null,
-            dateTime: null,
-            uploadedImages: null,
+
             isLoading: false,
-            keyLink: null,
         }
+    }
+
+    static getDerivedStateFromProps(props, state) {
+
+        if (Object.keys(props.getAdPageData).length !== 0) {
+
+            return {
+                isLoading: false
+            };
+
+        } else {
+
+            return {
+                isLoading: false
+            };
+
+        }
+
+        // return {}
+
     }
 
     componentDidMount() {
@@ -31,24 +40,40 @@ class Ad extends React.Component {
     }
 
     getData = () => {
-        this.props.getAdData()
+        this.props.getAdPage(history.location.pathname.slice(4));
+    }
+
+    getUserDataFunc = () => {
+        this.props.getUser(this.props.getAdPageData.uid);
+    }
+
+    componentDidUpdate() {
+        if (Object.keys(this.props.getAdPageData).length !== 0) {
+            if (Object.keys(this.props.getUserData).length === 0) {
+                this.getUserDataFunc()
+            }
+        }
     }
 
     render() {
 
-        Object.entries(this.props.getData).map(function (v, i) {
-            return ([
+        var that = this;
 
-                // <ListCard adData={v[1]} key={i} />
+        let checkfetchdata = Object.keys(this.props.getUserData).length !== 0 ?
+            <AdPage data={that.props.getAdPageData} loggedin_user={that.props.loggedin_user} isAuthenticated={that.props.isAuthenticated} getUserData={that.props.getUserData} />
+            : null
 
-            ]);
-        })
 
-        // console.log(this.state.adDescription)
+        let isLoader = this.state.isLoading === true ?
+            <LoaderComp />
+            : checkfetchdata
+
+
         return (
 
             <div>
-                <h1>Under Development</h1>
+                {isLoader}
+                {/* <h1>Under Development</h1> */}
             </div>
 
         );
@@ -60,11 +85,13 @@ class Ad extends React.Component {
 const mapStateToProps = (state) => ({
     loggedin_user: state.loggedin_user,
     isAuthenticated: state.isAuthenticated,
-    getData: state.getData,
+    getAdPageData: state.getAdPageData,
+    getUserData: state.getUserData,
 })
 
 const mapDispatchToProp = (dispatch) => ({
-    getAdData: () => dispatch(getAdData()),
+    getAdPage: (data) => dispatch(getAdPage(data)),
+    getUser: (data) => dispatch(getUser(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProp)(Ad);

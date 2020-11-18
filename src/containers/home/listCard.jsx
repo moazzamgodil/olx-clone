@@ -6,6 +6,7 @@ class ListCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            select_cat: this.props.adData.select_cat,
             adTitle: this.props.adData.adTitle,
             adDescription: this.props.adData.adDescription,
             selectType: this.props.adData.selectType,
@@ -23,21 +24,19 @@ class ListCard extends React.Component {
 
     render() {
 
-        console.log(this.props.adData)
-
         return (
             <div className="col-lg-3 col-md-4 col-sm-6 mb-3">
-                    <Link to={this.state.keyLink} className="listcardstyle card">
-                        <img className="card-img-top" src={this.state.uploadedImages[0]} alt="thumbnail" />
-                        <div className="card-body">
-                            <h4 className="card-title m-0">{this.state.adPriceConvert}</h4>
-                            <p className="card-text text-muted small">{this.state.adTitle}</p>
-                            <div className="mt-5 d-flex justify-content-between listcardfoot">
-                                <p className="h6 text-muted font-weight-light">{this.state.locationCity}, {this.state.locationState}</p>
-                                <p className="h6 text-muted font-weight-light">{this.state.dateTime}</p>
-                            </div>
+                <Link to={"ad/" + this.state.keyLink} className="listcardstyle card">
+                    <img className="card-img-top" src={this.state.uploadedImages[0]} alt="thumbnail" />
+                    <div className="card-body">
+                        <h4 className="card-title m-0">{this.state.adPriceConvert}</h4>
+                        <p className="card-text text-muted small">{this.state.adTitle}</p>
+                        <div className="mt-5 d-flex justify-content-between listcardfoot">
+                            <p className="h6 text-muted font-weight-light">{this.state.locationCity}, {this.state.locationState}</p>
+                            <p className="h6 text-muted font-weight-light">{this.state.dateTime}</p>
                         </div>
-                    </Link>
+                    </div>
+                </Link>
             </div>
         )
     }

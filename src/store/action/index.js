@@ -23,12 +23,25 @@ const signup_email = (data, history) => {
 
                 var user = result.user
 
+                var date = new Date(user.metadata.creationTime);
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var mm = months[date.getMonth()];
+                var yyyy = date.getFullYear();
+                var creationTime = mm + " " + yyyy
+
+                let userDP = user.photoURL === null ?
+                    "https://firebasestorage.googleapis.com/v0/b/buysell-now.appspot.com/o/userDP%2Favatar.jpg?alt=media&token=b444bdac-e46f-4689-9b4f-4ea81610575a"
+                    :
+                    user.photoURL
+
                 let create_user = {
                     name: user.displayName,
                     email: user.email,
-                    profile: user.photoURL,
-                    uid: user.uid
+                    profile: userDP,
+                    creationTime: creationTime
                 }
+
+                firebase.database().ref("users/" + user.uid).push().set(create_user)
 
                 dispatch({
                     type: "SignupUser",
@@ -125,6 +138,114 @@ const login_email = (data) => {
 }
 
 
+const fb_login = () => {
+    return (dispatch) => {
+
+        var provider = new firebase.auth.FacebookAuthProvider();
+        firebase.auth().signInWithPopup(provider).then(function (result) {
+            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+            var token = result.credential.accessToken;
+
+            window.$('#loginModal').modal('hide');
+
+            // The signed-in user info.
+            var user = result.user;
+
+
+            var date = new Date(user.metadata.creationTime);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var mm = months[date.getMonth()];
+            var yyyy = date.getFullYear();
+            var creationTime = mm + " " + yyyy
+
+            // if() {
+
+            firebase.database().ref('users').on("child_added", function (snapshot) {
+                snapshot.forEach(function (data) {
+
+                    if (snapshot.key !== user.uid) {
+
+                        let create_user = {
+                            name: user.displayName,
+                            email: user.email,
+                            profile: user.photoURL,
+                            creationTime: creationTime
+                        }
+
+                        firebase.database().ref("users/" + user.uid).push().set(create_user)
+
+                    }
+
+                });
+            });
+
+            // }
+
+
+            // console.log(ab)
+
+            // let create_user = {
+            //     name: user.displayName,
+            //     email: user.email,
+            //     profile: user.photoURL,
+            //     creationTime: creationTime
+            // }
+
+            // firebase.database().ref("users/" + user.uid).push().set(create_user)
+
+
+            let logged_user = {
+                name: user.displayName,
+                email: user.email,
+                profile: user.photoURL,
+                uid: user.uid
+            }
+
+            dispatch({
+                type: "FacebookLogin",
+                data: logged_user
+            })
+
+            dispatch({
+                type: "errorOccur",
+                data: false
+            })
+
+            // ...
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+
+            dispatch({
+                type: "errorOccur",
+                data: true
+            })
+
+            setTimeout(() => {
+                dispatch({
+                    type: "errorOccur",
+                    data: false
+                })
+            },
+                2000);
+
+            if (errorMessage) {
+
+                document.getElementById("errSignin").innerHTML = errorMessage;
+
+            }
+
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+        });
+    }
+}
+
+
 const signout = () => {
     return (dispatch) => {
         firebase.auth().signOut().then(function () {
@@ -183,8 +304,6 @@ const keyGen = (keyLength) => {
 const postAd = (data) => {
     return (dispatch) => {
 
-        var uid = data.loggedin_user.uid;
-
         // Get Date
         var today = new Date();
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -226,7 +345,7 @@ const postAd = (data) => {
 
                                     let keyLink = keyGen(10);
 
-                                    firebase.database().ref("ads" + "/" + "List").push().set({
+                                    firebase.database().ref("ads/List").push().set({
 
                                         "select_cat": data.select_cat,
                                         "selectType": data.selectType,
@@ -240,7 +359,7 @@ const postAd = (data) => {
                                         "postedBy": data.loggedin_user.name,
                                         "uid": data.loggedin_user.uid,
                                         "date": today,
-                                        "keyLink": keyLink,
+                                        "keyLink": keyLink + "_" + data.adTitle.replace(/ /g, "_") + "_" + data.select_cat.replace(/ /g, "_"),
 
                                     });
 
@@ -282,13 +401,70 @@ const getAdData = () => {
 
         firebase.database().ref("ads").on("child_added", function (item) {
 
-            // console.log(item)
-
             dispatch({
                 type: "GetAdData",
                 data: item.val()
             })
+
         });
+
+    }
+}
+
+
+const getAdPage = (str) => {
+    return (dispatch) => {
+
+        if (str !== null) {
+
+            firebase.database().ref('ads').on("child_added", function (snapshot) {
+                snapshot.forEach(function (data) {
+
+                    if (data.val().keyLink === str) {
+
+                        dispatch({
+                            type: "GetAdPage",
+                            data: data.val()
+                        })
+
+                        getUser(data.val().uid);
+
+
+                    }
+
+                });
+            });
+
+        }
+
+    }
+}
+
+
+const getUser = (str) => {
+    return (dispatch) => {
+
+
+        // console.log(str)
+        if (str !== null) {
+
+            firebase.database().ref('users').on("child_added", function (snapshot) {
+                snapshot.forEach(function (data) {
+
+                    if (snapshot.key === str) {
+
+                        dispatch({
+                            type: "GetUser",
+                            data: data.val()
+                        })
+
+                    }
+
+                });
+            });
+
+        }
+
     }
 }
 
@@ -299,9 +475,12 @@ export {
     errorOccur,
     signup_email,
     login_email,
+    fb_login,
     signout,
     selectcategory,
     postAd,
     isPostedtoNull,
     getAdData,
+    getAdPage,
+    getUser,
 }

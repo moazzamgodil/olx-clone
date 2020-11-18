@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signout } from '../../store/action';
+import LoginModal from "../loginModal.jsx";
 import logo from '../../assets/images/logo.png';
 import avatar from '../../assets/images/user/avatar.jpg';
-import banner from '../../assets/images/banner.png';
 
 class Header extends React.Component {
     render() {
@@ -44,8 +44,8 @@ class Header extends React.Component {
 
 
         return (
-            <header>
-                <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div >
+                <nav className="fixed-top navbar navbar-expand-lg navbar-light bg-light">
                     <a className="navbar-brand" href="/#"><img className="logo" src={logo} alt="logo" /></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon" />
@@ -83,7 +83,7 @@ class Header extends React.Component {
                         </ul>
                     </div>
                 </nav>
-                <div className="container-fluid px-5 py-2 categoryNav d-flex align-items-center flex-wrap">
+                <div style={{ marginTop: "60px" }} className="container-fluid px-5 py-2 categoryNav d-flex align-items-center flex-wrap">
                     <a className="text-dark mr-4" href="/#">Mobile Phones</a>
                     <a className="text-dark mr-4" href="/#">Cars</a>
                     <a className="text-dark mr-4" href="/#">Motorcycles</a>
@@ -92,10 +92,8 @@ class Header extends React.Component {
                     <a className="text-dark mr-4" href="/#">Computer &amp; Accessories</a>
                     <a className="text-dark mr-4" href="/#">TV - Video - Audio</a>
                 </div>
-                <div className="container-fluid p-0 bannerIMG">
-                    <img className="w-100 " src={banner} alt="banner" />
-                </div>
-            </header>
+                <LoginModal />
+            </div>
         )
     }
 }

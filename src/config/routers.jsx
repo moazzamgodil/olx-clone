@@ -7,9 +7,9 @@ import PostAd from '../containers/postad.jsx';
 import ChooseCat from '../containers/chooseCat.jsx';
 import Ad from '../containers/ad';
 import { connect } from 'react-redux';
-import { loggeduser, auth } from '../store/action';
+import { loggeduser, auth, getAdData } from '../store/action';
 import LoaderComp from './loader';
-// import NotFound from './404.jsx';
+import NotFound from './404.jsx';
 
 
 class AppRouter extends React.Component {
@@ -17,7 +17,8 @@ class AppRouter extends React.Component {
         super(props)
         this.state = {
             authed: null,
-            user: null
+            user: null,
+            adPageData: null
         };
     }
 
@@ -34,7 +35,7 @@ class AppRouter extends React.Component {
                     name: user.displayName,
                     email: user.email,
                     profile: user.photoURL,
-                    uid: user.uid
+                    uid: user.uid,
                 }
 
                 that.props.loggeduser(logged_user);
@@ -49,9 +50,18 @@ class AppRouter extends React.Component {
                 that.props.auth(false);
             }
         });
+
+        // that.props.getAdData(history.location.pathname);
+        // console.log(history.location.pathname.slice(1))
     }
 
+
+
+
+
     render() {
+
+
 
         return (
             <Router history={history}>
@@ -135,8 +145,9 @@ class AppRouter extends React.Component {
 
 
                     <Route
-                        exact path={history.location.pathname}
+                        exact path='/ad/*'
                         render={(props) => {
+
                             if (this.state.authed === null) {
                                 return (
                                     <div>
@@ -155,7 +166,16 @@ class AppRouter extends React.Component {
                                     <Ad {...props} />
                                 );
                             }
-                            // console.log(history.location.pathname)
+                        }
+                        }
+                    />
+
+
+                    <Route
+                        exact path='/*'
+                        render={(props) => {
+
+                            return <NotFound />
                         }
                         }
                     />
@@ -168,9 +188,14 @@ class AppRouter extends React.Component {
     }
 }
 
-const mapDispatchToProp = (dispatch) => ({
-    loggeduser: (data) => dispatch(loggeduser(data)),
-    auth: (data) => dispatch(auth(data))
+const mapStateToProps = (state) => ({
+    getData: state.getData,
 })
 
-export default connect(null, mapDispatchToProp)(AppRouter);
+const mapDispatchToProp = (dispatch) => ({
+    loggeduser: (data) => dispatch(loggeduser(data)),
+    auth: (data) => dispatch(auth(data)),
+    getAdData: (data) => dispatch(getAdData(data)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProp)(AppRouter);

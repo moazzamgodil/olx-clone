@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { signup_email, login_email, errorOccur } from '../store/action';
+import { fb_login, signup_email, login_email, errorOccur } from '../store/action';
 import LoaderComp from '../config/loader';
 import logo from '../assets/images/logo.png';
 import $ from 'jquery';
@@ -29,11 +29,15 @@ class LoginModal extends React.Component {
             return {
                 loginemail: "",
                 loginpassword: "",
+                name: "",
+                email: "",
+                password: "",
+                repeat_password: "",
                 isLoading: false
             };
 
         } else if (props.isErrorOccured) {
-            
+
             return {
                 isLoading: false
             };
@@ -179,6 +183,17 @@ class LoginModal extends React.Component {
         }
 
     }
+
+
+    handleFbLogin = (e) => {
+        e.preventDefault();
+
+        this.props.fb_login();
+
+    }
+
+
+
 
     handleLoginSubmit = (e) => {
         e.preventDefault();
@@ -373,6 +388,10 @@ class LoginModal extends React.Component {
 
         if ((a !== -1) && (b !== -1) && (c !== -1) && (d !== -1)) {
 
+            this.setState({
+                isLoading: true
+            });
+
             if (Object.keys(this.props.loggedin_user).length === 0) {
 
                 let user = {
@@ -449,7 +468,7 @@ class LoginModal extends React.Component {
                                 <form onSubmit={this.handleLoginSubmit} className="form-signin">
                                     <h3 className="h3 mb-3 font-weight-normal" style={{ textAlign: 'center' }}> Sign in</h3>
                                     <div className="social-login">
-                                        <button className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign in with Facebook</span> </button>
+                                        <button onClick={this.handleFbLogin} className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign in with Facebook</span> </button>
                                         <button className="btn google-btn social-btn" type="button"><span><i className="fab fa-google-plus-g" /> Sign in with Google+</span> </button>
                                     </div>
                                     <p style={{ textAlign: 'center' }}> OR </p>
@@ -471,7 +490,7 @@ class LoginModal extends React.Component {
                                 <form onSubmit={this.handleSignupSubmit} className="form-signup">
                                     <h3 className="h3 mb-3 font-weight-normal" style={{ textAlign: 'center' }}> Sign Up</h3>
                                     <div className="social-login">
-                                        <button className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign up with Facebook</span> </button>
+                                        <button onClick={this.handleFbLogin} className="btn facebook-btn social-btn" type="button"><span><i className="fab fa-facebook-f" /> Sign up with Facebook</span> </button>
                                         <button className="btn google-btn social-btn" type="button"><span><i className="fab fa-google-plus-g" /> Sign up with Google+</span> </button>
                                     </div>
                                     <p style={{ textAlign: 'center' }}>OR</p>
@@ -495,12 +514,14 @@ class LoginModal extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+    getUserData: state.getUserData,
     loggedin_user: state.loggedin_user,
     isErrorOccured: state.isErrorOccured,
     isAuthenticated: state.isAuthenticated
 })
 
 const mapDispatchToProp = (dispatch) => ({
+    fb_login: () => dispatch(fb_login()),
     signup_email: (data) => dispatch(signup_email(data)),
     login_email: (data) => dispatch(login_email(data)),
     errorOccur: (data) => dispatch(errorOccur(data))

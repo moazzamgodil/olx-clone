@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAdData } from '../../store/action';
 import LoaderComp from '../../config/loader';
-import LoginModal from "../loginModal.jsx";
 import ListCard from "./listCard.jsx";
 
 class Body extends React.Component {
@@ -43,7 +42,6 @@ class Body extends React.Component {
     }
 
     render() {
-        // console.log(this.props.getData)
 
         let fetchdata = Object.keys(this.props.getData).length !== 0 ?
 
@@ -77,7 +75,6 @@ class Body extends React.Component {
                         <button type="button" className="font-weight-bold btn btn-lg btn-outline-dark">Load more</button>
                     </div>
                 </div>
-                <LoginModal />
             </div>
 
         )
@@ -92,7 +89,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProp = (dispatch) => ({
-    getAdData: () => dispatch(getAdData()),
+    getAdData: (data) => dispatch(getAdData(data)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProp)(Body);
